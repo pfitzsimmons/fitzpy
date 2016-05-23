@@ -1,3 +1,43 @@
+'''
+Propertized allows you to create a class with properties that have metadata
+
+For instance, let's say you are building an API with model-like objects for different vehicles.  
+The object instance should store the data for each vehicle.  But you want the model itself to 
+store various meta data about each property so that you can automatically build API docs.
+
+class Vehicle(Propertized):
+    manufacturer = Prop(label='Manufacturer', 
+    horse_power = Prop(label='Horsepower', type=int, help_text='The power of the vehicle's engine')
+    weight = Prop(label='Weight', type=int, help_text='The weight in pounds of the vehicle')
+    max_speed = Prop(label='Max speed', type=int, help_text='The maximum speed, in MPH')
+
+Now I can create an instance of the class:
+
+ford_prefect = Vehicle(manufacturer='Ford', horse_power=120, weight=4000, max_speed=95)
+>>> print ford_prefect.horse_power
+-> 120
+ford_prefect.horse_power = 110
+>>> print ford_prefect.horse_power
+-> 110
+
+I can also programmatically get the metadata about the class properties.  I could use
+this to generate documentation, so that I have one canonical represenation of my model.
+
+doc_builder = []
+for prop in Vehicle.list_class_props():
+   doc_builder.append("""\
+Field: %(label)s
+Type: %(type)s
+Description: %(help_text)s
+""" % prop.__dict__)
+
+print 'API Documentation:\n' + '\n'.join(doc_builder)
+
+
+
+'''
+
+
 import inspect
 
 class Prop(property):
